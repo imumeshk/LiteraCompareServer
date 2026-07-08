@@ -1,0 +1,21 @@
+{
+  "showSaveOptions": ["pdf", "docx", "track_changes", "changedPagesPdf"],
+  "showEmailOptions": ["pdf", "docx", "track_changes", "changedPagesPdf"],
+  "defaultEmailChecked": ["pdf"],
+  "enableHints": true,
+  "showInDownloadList": false,
+  "showPathAfterAction": true,
+  "rememberLastFolder": false,
+  "enableCancelCompare": true,
+  "namePrefixes": {
+    "pdf": "Redline - ",
+    "docx": "Redline - ",
+    "track_changes": "Track Changes - ",
+    "changedPagesPdf": "Redline Pages - ",
+    "default": "Comparison - "
+  },
+  "nameTemplate": "{prefix}{original} and {modified}",
+  "emailSubjectTemplate": "Document Comparison ({original} vs {modified})",
+  "lockNameFormatting": false,
+  "lockEmailSubject": false
+}
