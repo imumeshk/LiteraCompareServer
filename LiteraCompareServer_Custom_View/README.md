@@ -1,4 +1,5 @@
 # LiteraCompareServer Custom View
+<img width="1918" height="945" alt="image" src="https://github.com/user-attachments/assets/36fe6fac-9a24-461a-83c7-83e23b67ab2d" />
 
 This subdirectory contains a custom viewer implementation designed to work with the Litera Compare Server.
 
