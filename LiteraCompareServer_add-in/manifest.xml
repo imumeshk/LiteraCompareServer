@@ -9,7 +9,7 @@
   <Id>b2959827-0230-4cf8-8c10-85f206585141</Id>
 
   <Version>1.1.0.0</Version>
-  <ProviderName>Litera Support</ProviderName>
+  <ProviderName>Custom Add-in</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   
   <DisplayName DefaultValue="Compare Server" />
