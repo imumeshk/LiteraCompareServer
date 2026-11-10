@@ -1,0 +1,162 @@
+<div id="settings-overlay" class="settings-overlay" aria-hidden="true">
+  <div class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div class="settings-header">
+      <div id="settings-title" data-i18n="btn_settings">Settings</div>
+      <button id="btn-close-settings" class="icon-btn" type="button" aria-label="Close settings">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.854 4.146a.5.5 0 1 0-.708.708L9.293 10l-5.147 5.146a.5.5 0 0 0 .708.708L10 10.707l5.146 5.147a.5.5 0 0 0 .708-.708L10.707 10l5.147-5.146a.5.5 0 0 0-.708-.708L10 9.293 4.854 4.146z"/></svg>
+      </button>
+    </div>
+
+    <div class="settings-body">
+      <div class="settings-section" id="section-save-menu-items">
+        <div class="settings-label" data-i18n="lbl_save_menu_items">Save menu items</div>
+        <small class="settings-hint" data-i18n="msg_visibility_controlled">Visibility controlled by administrator</small>
+        <label class="settings-option">
+          <input type="checkbox" data-save-option="pdf" disabled />
+          <span data-i18n="lbl_redline_pdf">Redline (PDF)</span>
+        </label>
+        <label class="settings-option">
+          <input type="checkbox" data-save-option="docx" disabled />
+          <span data-i18n="lbl_redline_docx">Redline (Docx)</span>
+        </label>
+        <label class="settings-option">
+          <input type="checkbox" data-save-option="track_changes" disabled />
+          <span data-i18n="lbl_track_changes">Track Changes</span>
+        </label>
+        <label class="settings-option">
+          <input type="checkbox" data-save-option="changedPagesPdf" disabled />
+          <span data-i18n="lbl_redline_pages">Redline Pages</span>
+        </label>
+      </div>
+
+      <div class="settings-section" id="section-email-menu-items">
+        <div class="settings-label" data-i18n="lbl_email_menu_items">Email menu items</div>
+        <small class="settings-hint" data-i18n="msg_visibility_controlled">Visibility controlled by administrator</small>
+        <label class="settings-option">
+          <input type="checkbox" data-email-option="original" disabled />
+          <span data-i18n="lbl_original_file">Original file</span>
+        </label>
+        <label class="settings-option">
+          <input type="checkbox" data-email-option="modified" disabled />
+          <span data-i18n="lbl_modified_file">Modified file</span>
+        </label>
+        <label class="settings-option">
+          <input type="checkbox" data-email-option="pdf" disabled />
+          <span data-i18n="lbl_redline_pdf">Redline (PDF)</span>
+        </label>
+        <label class="settings-option">
+          <input type="checkbox" data-email-option="docx" disabled />
+          <span data-i18n="lbl_redline_docx">Redline (Docx)</span>
+        </label>
+        <label class="settings-option">
+          <input type="checkbox" data-email-option="track_changes" disabled />
+          <span data-i18n="lbl_track_changes">Track Changes</span>
+        </label>
+        <label class="settings-option">
+          <input type="checkbox" data-email-option="changedPagesPdf" disabled />
+          <span data-i18n="lbl_redline_pages">Redline Pages</span>
+        </label>
+      </div>
+
+      <div class="settings-section" id="section-default-checked">
+        <div class="settings-label" data-i18n="lbl_default_checked">Default checked in Email menu</div>
+        <label class="settings-option"><input type="checkbox" data-email-default="original" /> <span data-i18n="lbl_original_file">Original file</span></label>
+        <label class="settings-option"><input type="checkbox" data-email-default="modified" /> <span data-i18n="lbl_modified_file">Modified file</span></label>
+        <label class="settings-option"><input type="checkbox" data-email-default="pdf" /> <span data-i18n="lbl_redline_pdf">Redline (PDF)</span></label>
+        <label class="settings-option"><input type="checkbox" data-email-default="docx" /> <span data-i18n="lbl_redline_docx">Redline (Docx)</span></label>
+        <label class="settings-option"><input type="checkbox" data-email-default="track_changes" /> <span data-i18n="lbl_track_changes">Track Changes</span></label>
+        <label class="settings-option"><input type="checkbox" data-email-default="changedPagesPdf" /> <span data-i18n="lbl_redline_pages">Redline Pages</span></label>
+      </div>
+
+      <div class="settings-section" id="section-save-behavior">
+        <div class="settings-label" data-i18n="lbl_save_behavior">Save behavior</div>
+        <label class="settings-field">
+          <span data-i18n="lbl_default_save_folder">Default save folder</span>
+          <div class="settings-inline">
+            <input type="text" id="default-save-folder" placeholder="Not set" data-i18n-placeholder="ph_not_set" />
+            <button id="btn-choose-save-folder" class="btn-action btn-compact" type="button" data-i18n="btn_choose">Choose</button>
+            <button id="btn-clear-save-folder" class="btn-action btn-compact" type="button" data-i18n="btn_clear">Clear</button>
+          </div>
+          <small class="settings-hint" data-i18n="msg_used_for_display">When a folder is chosen, saves go there automatically.</small>
+        </label>
+        <label class="settings-option">
+          <input type="checkbox" id="show-in-download-list" />
+          <span data-i18n="lbl_show_in_download_list">Show in download list</span>
+        </label>
+        <label class="settings-option">
+          <input type="checkbox" id="remember-last-folder" />
+          <span data-i18n="lbl_remember_last_folder">Remember last selected file folder</span>
+        </label>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-label" data-i18n="lbl_notifications">Notifications</div>
+        <label class="settings-option">
+          <input type="checkbox" id="show-path-after-action" />
+          <span data-i18n="lbl_show_saved_path">Show saved path</span>
+        </label>
+      </div>
+
+      <div class="settings-section" id="section-compare-behavior">
+        <div class="settings-label" data-i18n="lbl_compare_behavior">Compare behavior</div>
+        <label class="settings-option">
+          <input type="checkbox" id="enable-cancel-compare" />
+          <span data-i18n="lbl_enable_cancel">Enable cancel during compare</span>
+        </label>
+      </div>
+
+      <div class="settings-section" id="section-name-prefixes">
+        <div class="settings-label" data-i18n="lbl_default_name_prefixes">Default name prefixes</div>
+        <small class="settings-hint" data-i18n="msg_use_variables">You can use {original} and {modified} in any field below.</small>
+        <label class="settings-field">
+          <span><span data-i18n="lbl_redline_pdf">Redline (PDF)</span></span>
+          <input type="text" id="prefix-pdf" placeholder="Redline - " data-i18n-placeholder="ph_redline_pdf" />
+        </label>
+        <label class="settings-field">
+          <span><span data-i18n="lbl_redline_docx">Redline (Docx)</span></span>
+          <input type="text" id="prefix-docx" placeholder="Redline - " data-i18n-placeholder="ph_redline_docx" />
+        </label>
+        <label class="settings-field">
+          <span><span data-i18n="lbl_track_changes">Track Changes</span></span>
+          <input type="text" id="prefix-track" placeholder="Track Changes - " data-i18n-placeholder="ph_track_changes" />
+        </label>
+        <label class="settings-field">
+          <span><span data-i18n="lbl_redline_pages">Redline Pages</span></span>
+          <input type="text" id="prefix-pages" placeholder="Redline Pages - " data-i18n-placeholder="ph_redline_pages" />
+        </label>
+        <label class="settings-field">
+          <span data-i18n="lbl_name_template">Default Name Template</span>
+          <input type="text" id="name-template" placeholder="{prefix}{original} and {modified}" data-i18n-placeholder="ph_name_template" />
+          <small class="settings-hint" data-i18n="msg_use_prefix_vars">Use {prefix}, {original}, {modified}</small>
+        </label>
+      </div>
+
+      <div class="settings-section" id="section-email-subject">
+        <div class="settings-label" data-i18n="lbl_email_subject">Email subject</div>
+        <label class="settings-field">
+          <span data-i18n="lbl_default_subject">Default subject</span>
+          <input type="text" id="email-subject-template" placeholder="Document Comparison ({original} vs {modified})" data-i18n-placeholder="ph_email_subject_template" />
+          <small class="settings-hint" data-i18n="msg_use_date_vars">Use {original}, {modified}, {date}</small>
+        </label>
+      </div>
+
+      <div class="settings-section" id="rendering-options-section" style="display:none;">
+        <div class="settings-label" data-i18n="lbl_rendering_options">Rendering Options</div>
+        <label class="settings-field">
+          <span data-i18n="lbl_parameters">Parameters</span>
+          <input type="text" id="rendering-options" placeholder="e.g. opt1=val1;opt2=val2" data-i18n-placeholder="ph_rendering_options" />
+        </label>
+      </div>
+    </div>
+
+    <div class="settings-footer">
+      <div id="settings-confirm" class="settings-confirm" style="display:none">
+        <span data-i18n="msg_reset_settings">Reset settings to defaults?</span>
+        <button id="btn-confirm-reset" class="btn-action" type="button" data-i18n="btn_confirm">Confirm</button>
+        <button id="btn-cancel-reset" class="btn-action" type="button" data-i18n="btn_cancel">Cancel</button>
+      </div>
+      <button id="btn-reset-settings" class="btn-action" type="button" data-i18n="btn_reset_default">Reset Default</button>
+      <button id="btn-save-settings" class="btn-compare" type="button" data-i18n="btn_save">Save</button>
+    </div>
+  </div>
+</div>

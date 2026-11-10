@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Compare Documents</title>
+  <link rel="stylesheet" href="taskpane.css" />
+  <link rel="stylesheet" href="settings.css" />
+  <script>
+    (function() {
+      try {
+        var p = new URLSearchParams(window.location.search).get('lang');
+        var s = localStorage.getItem('litera_viewer_lang');
+        var l = p || s;
+        if (l && l !== 'en') {
+          document.documentElement.classList.add('i18n-loading');
+          setTimeout(function() {
+            document.documentElement.classList.remove('i18n-loading');
+          }, 500);
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <script src="/viewer/i18n.js"></script>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <script src="https://alcdn.msauth.net/browser/2.30.0/js/msal-browser.min.js"></script>
+</head>
+<body>
+
+<div class="portal-wrapper">
+
+  <!-- ====== BLUE BANNER HEADER ====== -->
+  <header class="portal-header">
+    <!-- Centered brand text -->
+    <div class="header-brand-wrap" style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
+      <div class="logo-box" id="hdr-brand-initial" style="width: 32px; height: 32px; background: rgba(255,255,255,0.2); color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; flex-shrink: 0;">L</div>
+      <div class="header-brand" style="flex: 1; min-width: 0;">
+        <h1 class="header-title" id="hdr-brand-name">COMPARE SERVER</h1>
+        <p class="header-subtitle" id="hdr-brand-sub">Compare documents to understand the differences between documents.</p>
+      </div>
+    </div>
+
+    <!-- Top-right controls: language + avatar (SSO only) + logout (SSO only) + settings -->
+    <div class="header-controls">
+      <!-- Language selector -->
+      <div class="lang-wrap">
+        <select id="lang-selector" class="lang-selector" aria-label="Select language">
+          <option value="en">EN</option>
+        </select>
+        <svg class="lang-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+
+      <!-- Avatar: shown only when SSO user is logged in -->
+      <div id="viewer-user-badge" class="hdr-avatar" style="display:none;" title="">
+        <span id="viewer-avatar">UK</span>
+      </div>
+
+      <!-- Logout: shown only when SSO user is logged in -->
+      <button id="btn-viewer-logout" class="hdr-icon-btn" title="Sign Out" style="display:none;" data-i18n-title="btn_sign_out">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+      </button>
+
+      <!-- Settings gear -->
+      <button id="btn-settings" class="hdr-icon-btn" title="Settings" aria-label="Settings" data-i18n-title="btn_settings">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ====== MAIN BODY ====== -->
+  <main class="portal-main">
+
+    <!-- SSO Login Wall -->
+    <div id="viewer-sso-wall" style="display:none; padding: 24px 20px; text-align:center;">
+      <div style="max-width: 340px; margin: 0 auto;">
+        <div style="width:56px;height:56px;background:#eff6ff;border:2px solid #bfdbfe;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1e3a8a" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </div>
+        <h3 style="color:#1e3a8a;font-size:17px;font-weight:700;margin-bottom:6px;" data-i18n="hdr_sso">Microsoft Entra SSO</h3>
+        <p style="color:#64748b;font-size:13px;margin-bottom:20px;" data-i18n="msg_sso_restricted">Access to the Compare add-in is restricted to authorized users.</p>
+        <button id="btn-viewer-login" type="button" class="btn-primary" style="width:100%;justify-content:center;">
+          <span data-i18n="btn_sign_in">Sign In with Microsoft</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Compare Card -->
+    <div class="upload-card" id="viewer-compare-card">
+      <form id="compare-upload-form">
+        <div class="compare-sections">
+
+          <!-- Original -->
+          <div class="section">
+            <div class="section-label" data-i18n="lbl_original_section">Original</div>
+            <div id="original-content">
+              <div class="source-list">
+                <button class="source-btn" data-action="current" data-section="original" type="button">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="#555"><path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414c0-.53-.21-1.04-.586-1.414l-3.414-3.414A2 2 0 0010.586 2H6zm4.5 1.5V7a.5.5 0 00.5.5h3.5L10.5 3.5z"/></svg>
+                  <span data-i18n="btn_current_doc">Current Document</span>
+                </button>
+                <button class="source-btn" data-action="browse" data-section="original" type="button">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="#555"><path d="M2 5.5A2.5 2.5 0 014.5 3h2.646c.398 0 .78.158 1.06.44l1.086 1.085c.14.14.332.22.53.225h5.678A2.5 2.5 0 0118 7.25v7.25A2.5 2.5 0 0115.5 17H4.5A2.5 2.5 0 012 14.5V5.5z"/></svg>
+                  <span data-i18n="btn_local_device">Local device</span>
+                </button>
+              </div>
+            </div>
+            <input type="file" id="file-input-original" accept=".docx,.doc,.pdf,.rtf,.txt" style="display:none;">
+          </div>
+
+          <hr class="section-divider" />
+
+          <!-- Modified -->
+          <div class="section">
+            <div class="section-label" data-i18n="lbl_modified_section">Modified</div>
+            <div id="modified-content">
+              <div class="source-list">
+                <button class="source-btn" data-action="current" data-section="modified" type="button">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="#555"><path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414c0-.53-.21-1.04-.586-1.414l-3.414-3.414A2 2 0 0010.586 2H6zm4.5 1.5V7a.5.5 0 00.5.5h3.5L10.5 3.5z"/></svg>
+                  <span data-i18n="btn_current_doc">Current Document</span>
+                </button>
+                <button class="source-btn" data-action="browse" data-section="modified" type="button">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="#555"><path d="M2 5.5A2.5 2.5 0 014.5 3h2.646c.398 0 .78.158 1.06.44l1.086 1.085c.14.14.332.22.53.225h5.678A2.5 2.5 0 0118 7.25v7.25A2.5 2.5 0 0115.5 17H4.5A2.5 2.5 0 012 14.5V5.5z"/></svg>
+                  <span data-i18n="btn_local_device">Local device</span>
+                </button>
+              </div>
+            </div>
+            <input type="file" id="file-input-modified" accept=".docx,.doc,.pdf,.rtf,.txt" style="display:none;">
+          </div>
+
+          <!-- Swap rail -->
+          <div class="swap-rail">
+            <button type="button" id="btn-swap-files" class="swap-btn" title="Swap files">
+              <svg viewBox="0 0 20 20" width="15" height="15" fill="#424242"><path d="M10 2l3 3h-2v6H9V5H7l3-3zm0 16l-3-3h2V9h2v6h2l-3 3z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Password fields (hidden by default) -->
+        <div id="password-toggle-row-container" style="display:none; margin-top:14px;">
+          <label style="cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:500;font-size:13px;color:#1e293b;">
+            <input type="checkbox" id="chk-password-protected" />
+            <span data-i18n="lbl_password_protected">Documents are password-protected</span>
+          </label>
+        </div>
+        <div id="password-fields-container" style="display:none; margin-top:10px; padding:14px; background:#fff5f5; border:1px solid #feb2b2; border-radius:8px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+              <label data-i18n="lbl_original_password" style="display:block;font-size:12px;font-weight:500;color:#475569;margin-bottom:4px;">Original Password</label>
+              <div style="display:flex;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden;background:#fff;">
+                <input type="password" id="input-orig-password" autocomplete="off" style="width:100%;padding:7px 10px;border:none;outline:none;font-size:13px;" />
+                <button type="button" class="btn-eye" data-target="input-orig-password" style="background:none;border:none;padding:0 9px;cursor:pointer;color:#64748b;">👁</button>
+              </div>
+            </div>
+            <div>
+              <label data-i18n="lbl_modified_password" style="display:block;font-size:12px;font-weight:500;color:#475569;margin-bottom:4px;">Modified Password</label>
+              <div style="display:flex;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden;background:#fff;">
+                <input type="password" id="input-mod-password" autocomplete="off" style="width:100%;padding:7px 10px;border:none;outline:none;font-size:13px;" />
+                <button type="button" class="btn-eye" data-target="input-mod-password" style="background:none;border:none;padding:0 9px;cursor:pointer;color:#64748b;">👁</button>
+              </div>
+            </div>
+          </div>
+          <p style="margin-top:10px;font-size:11px;color:#64748b;" data-i18n="lbl_password_privacy_note">Passwords are used only for this comparison and are not stored.</p>
+        </div>
+
+        <hr class="section-divider-outer" style="margin:18px 0;" />
+
+        <div id="same-name-warning" style="display:none;color:#975a16;font-size:12px;margin-bottom:10px;font-weight:500;" data-i18n="msg_same_name_warning">Both selected files have the same name, but you can still proceed.</div>
+
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <button type="button" id="btn-compare" class="btn-primary" disabled>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg>
+            <span data-i18n="btn_run_compare">Compare</span>
+          </button>
+          <button id="btn-cancel-compare" class="btn-cancel" type="button" style="display:none;" data-i18n="btn_cancel">Cancel</button>
+        </div>
+      </form>
+
+      <!-- Result action buttons -->
+      <div id="result-actions" class="result-actions" style="display:none; margin-top:16px;">
+        <button id="btn-view" class="btn-primary" type="button">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          <span data-i18n="btn_view">View</span>
+        </button>
+
+        <div class="split-btn-group dd-wrap" style="position:relative;">
+          <button id="btn-save-primary" class="btn-primary split-btn-main" type="button">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            <span data-i18n="btn_save">Save</span>
+          </button>
+          <button id="btn-save-toggle" class="btn-primary split-btn-toggle" type="button" style="border-left:1px solid rgba(255,255,255,0.25);">▾</button>
+          <div id="dd-menu" class="dd-menu" style="display:none;position:absolute;top:100%;right:0;background:white;z-index:100;">
+            <button class="dd-item" data-format="pdf" type="button" data-i18n="lbl_redline_pdf">Redline (PDF)</button>
+            <button class="dd-item" data-format="track_changes" type="button" data-i18n="lbl_track_changes">Track Changes</button>
+            <button class="dd-item" data-format="docx" type="button" data-i18n="lbl_redline_docx">Redline (Docx)</button>
+            <button class="dd-item" data-format="changedPagesPdf" type="button" data-i18n="lbl_redline_pages">Redline Pages</button>
+          </div>
+        </div>
+
+        <div class="split-btn-group dd-wrap" id="email-btn-group" style="position:relative;">
+          <button id="btn-email-primary" class="btn-primary split-btn-main" type="button">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <span data-i18n="btn_email">Email</span>
+          </button>
+          <button id="btn-email-toggle" class="btn-primary split-btn-toggle" type="button" style="border-left:1px solid rgba(255,255,255,0.25);">▾</button>
+          <div id="email-menu" class="dd-menu checkbox-menu" style="display:none;position:absolute;top:100%;left:0;background:white;z-index:100;padding:8px;">
+            <label class="dd-item" data-option="original"><input type="checkbox" value="original" /> <span data-i18n="lbl_original_file">Original file</span></label>
+            <label class="dd-item" data-option="modified"><input type="checkbox" value="modified" /> <span data-i18n="lbl_modified_file">Modified file</span></label>
+            <hr style="margin:3px 0;border:none;border-top:1px solid #e2e8f0;">
+            <label class="dd-item" data-option="pdf"><input type="checkbox" value="pdf" checked /> <span data-i18n="lbl_redline_pdf">Redline (PDF)</span></label>
+            <label class="dd-item" data-option="docx"><input type="checkbox" value="docx" /> <span data-i18n="lbl_redline_docx">Redline (Docx)</span></label>
+            <label class="dd-item" data-option="track_changes"><input type="checkbox" value="track_changes" /> <span data-i18n="lbl_track_changes">Track Changes</span></label>
+            <label class="dd-item" data-option="changedPagesPdf"><input type="checkbox" value="changedPagesPdf" /> <span data-i18n="lbl_redline_pages">Redline Pages</span></label>
+          </div>
+        </div>
+
+        <button id="btn-reset" class="btn-primary" type="button">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+          <span data-i18n="btn_reset">Reset</span>
+        </button>
+      </div>
+
+      <div id="status-wrap" style="display:none; margin-top:12px;"></div>
+    </div>
+  </main>
+</div>
+
+<!-- Settings overlay injected at runtime -->
+<div id="settings-mount"></div>
+
+<script src="settings.js"></script>
+<script src="taskpane.js"></script>
+</body>
+</html>

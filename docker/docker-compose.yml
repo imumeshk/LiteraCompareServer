@@ -1,0 +1,23 @@
+name: compare-server
+version: '3.8'
+services:
+  server:
+    build: 
+      context: ../
+      dockerfile: docker/Dockerfile
+    image: compare-server
+    container_name: compare-server
+    ports:
+      - "3000:3000"
+    volumes:
+      - litera-compare-data:/app/server/data
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  litera-compare-data:
+

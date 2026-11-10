@@ -1,0 +1,6 @@
+{
+  "name": "Litera Compare Server",
+  "description": "Node.js + React server for Litera Compare Office Add-in, Custom Viewer, and Admin Management Console",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

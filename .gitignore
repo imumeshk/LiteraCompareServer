@@ -1,0 +1,26 @@
+# Dependencies & build output
+node_modules/
+dist/
+portable/
+
+# Secrets & local config
+.env
+.env.*
+!.env.example
+
+# Runtime data (SQLite DB, exports)
+server/data/*
+!server/data/.gitkeep
+!server/data/.gitignore
+
+# Deployment artifacts
+logs/
+backups/
+diagnostics/
+tools/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

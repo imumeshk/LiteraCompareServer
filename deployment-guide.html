@@ -1,0 +1,2443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Litera Compare Server | Comprehensive Deployment Guide</title>
+  <style>
+    :root {
+      --primary: #005a9e;
+      --primary-hover: #004578;
+      --primary-subtle: #e6f0fa;
+      --navy: #0e2439;
+      --navy-light: #163654;
+      --slate-dark: #202b38;
+      --text: #1d252c;
+      --text-muted: #536471;
+      --bg: #f4f7fb;
+      --card-bg: #ffffff;
+      --border: #d3dce6;
+      --border-subtle: #e8eef5;
+      --code-bg: #0f172a;
+      --code-color: #f1f5f9;
+      --success: #0f7b44;
+      --success-subtle: #ebf8f0;
+      --warning: #b76e00;
+      --warning-subtle: #fff9e6;
+      --danger: #b3261e;
+      --danger-subtle: #fdf2f2;
+      --info: #0066b2;
+      --info-subtle: #eef6fc;
+      --shadow-sm: 0 2px 6px rgba(14, 36, 57, 0.05);
+      --shadow-md: 0 6px 20px rgba(14, 36, 57, 0.08);
+      --shadow-lg: 0 12px 36px rgba(14, 36, 57, 0.12);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--text);
+      background-color: var(--bg);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    /* Container layout */
+    .app-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Navigation */
+    aside.sidebar {
+      width: 300px;
+      background: var(--navy);
+      color: #c9d8e7;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 100%);
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-subtitle {
+      font-size: 0.78rem;
+      color: #8da4be;
+      margin-top: 4px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .nav-group {
+      padding: 14px 12px;
+      flex-grow: 1;
+    }
+
+    .nav-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #657e9b;
+      padding: 8px 12px 6px;
+      font-weight: 700;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      color: #b7cbde;
+      text-decoration: none;
+      font-size: 0.86rem;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s ease-in-out;
+      margin-bottom: 2px;
+    }
+
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.09);
+      color: #ffffff;
+      transform: translateX(3px);
+    }
+
+    .nav-link svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      opacity: 0.85;
+    }
+
+    .sidebar-footer {
+      padding: 14px 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.76rem;
+      color: #8da4be;
+      background: rgba(0, 0, 0, 0.18);
+    }
+
+    /* Main Content Area */
+    main.main-content {
+      flex: 1;
+      padding: 36px 48px 80px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 50%, #005a9e 100%);
+      color: #ffffff;
+      padding: 38px 40px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      margin-bottom: 34px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-banner::after {
+      content: "";
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(4px);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #bce1ff;
+      margin-bottom: 14px;
+    }
+
+    .hero-title {
+      font-size: 2.3rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-subtitle {
+      font-size: 1.05rem;
+      color: #dbe8f5;
+      max-width: 820px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .hero-meta-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: #e4edf6;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .pill-badge svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Content Sections */
+    section.guide-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      margin-bottom: 34px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 22px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--border-subtle);
+    }
+
+    .section-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: var(--primary-subtle);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .section-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .section-title {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+    }
+
+    .section-subtitle {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    h3 {
+      font-size: 1.22rem;
+      font-weight: 600;
+      color: var(--navy-light);
+      margin: 28px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h4 {
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--slate-dark);
+      margin: 18px 0 8px;
+    }
+
+    p {
+      margin-bottom: 14px;
+      color: #334155;
+    }
+
+    /* Cards & Grids */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+      margin: 18px 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin: 18px 0;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin: 18px 0;
+    }
+
+    .feature-card {
+      background: #fafbfd;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+      border-color: #b0c4de;
+    }
+
+    .feature-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .feature-card-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: var(--primary-subtle);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .feature-card-title {
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    /* Guided Navigation Menu Tree */
+    .menu-tree {
+      background: #111827;
+      color: #f3f4f6;
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin: 20px 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+
+    .menu-tree-header {
+      color: #38bdf8;
+      font-weight: 700;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #1f2937;
+      padding-bottom: 6px;
+    }
+
+    .menu-tree-branch {
+      color: #fbbf24;
+      font-weight: 600;
+    }
+
+    .menu-tree-action {
+      color: #a7f3d0;
+    }
+
+    .menu-tree-key {
+      display: inline-block;
+      min-width: 28px;
+      color: #60a5fa;
+      font-weight: bold;
+    }
+
+    .menu-breadcrumb-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0 18px;
+      align-items: center;
+    }
+
+    .crumb-pill {
+      background: #e2e8f0;
+      color: #0f172a;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .crumb-sep {
+      color: #94a3b8;
+      font-weight: bold;
+    }
+
+    /* Callout alerts */
+    .callout {
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 20px 0;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      border-left: 5px solid;
+    }
+
+    .callout svg {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+      font-size: 0.95rem;
+    }
+
+    .callout-body {
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .callout-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .callout-info {
+      background: var(--info-subtle);
+      border-color: var(--info);
+      color: #0c4a6e;
+    }
+    .callout-info svg { color: var(--info); }
+
+    .callout-warning {
+      background: var(--warning-subtle);
+      border-color: var(--warning);
+      color: #713f12;
+    }
+    .callout-warning svg { color: var(--warning); }
+
+    .callout-success {
+      background: var(--success-subtle);
+      border-color: var(--success);
+      color: #14532d;
+    }
+    .callout-success svg { color: var(--success); }
+
+    .callout-danger {
+      background: var(--danger-subtle);
+      border-color: var(--danger);
+      color: #7f1d1d;
+    }
+    .callout-danger svg { color: var(--danger); }
+
+    /* Tables */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin: 18px 0 24px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+      background: #ffffff;
+    }
+
+    th {
+      background: #f1f5f9;
+      color: var(--navy);
+      font-weight: 700;
+      padding: 12px 16px;
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: top;
+      color: #334155;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    /* Badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-blue { background: #e0f2fe; color: #0369a1; }
+    .badge-green { background: #dcfce7; color: #15803d; }
+    .badge-amber { background: #fef3c7; color: #b45309; }
+    .badge-red { background: #fee2e2; color: #b91c1c; }
+    .badge-purple { background: #f3e8ff; color: #7e22ce; }
+    .badge-gray { background: #f1f5f9; color: #475569; }
+
+    /* Credential Card */
+    .credential-box {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: #ffffff;
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 16px 0;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid #334155;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .cred-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+    }
+
+    .cred-label {
+      color: #94a3b8;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    .cred-val {
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      background: #334155;
+      padding: 4px 10px;
+      border-radius: 4px;
+      color: #38bdf8;
+      font-weight: bold;
+    }
+
+    /* Code blocks */
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.88em;
+      background: #eef2f6;
+      color: #0f172a;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-color);
+      padding: 18px 20px;
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      margin: 16px 0;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border: none;
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e293b;
+      color: #94a3b8;
+      padding: 8px 16px;
+      border-top-left-radius: var(--radius-md);
+      border-top-right-radius: var(--radius-md);
+      font-size: 0.78rem;
+      font-family: inherit;
+      font-weight: 600;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .code-container {
+      margin: 16px 0;
+    }
+
+    .code-container pre {
+      margin: 0;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    /* Lists */
+    ol.steps-list {
+      counter-reset: step-counter;
+      list-style: none;
+      padding-left: 0;
+      margin: 18px 0;
+    }
+
+    ol.steps-list > li {
+      counter-increment: step-counter;
+      position: relative;
+      padding-left: 48px;
+      margin-bottom: 22px;
+    }
+
+    ol.steps-list > li::before {
+      content: counter(step-counter);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0, 90, 158, 0.35);
+    }
+
+    ul.bullet-list {
+      padding-left: 22px;
+      margin: 12px 0 16px;
+    }
+
+    ul.bullet-list li {
+      margin-bottom: 8px;
+      color: #334155;
+    }
+
+    /* Links */
+    a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer.doc-footer {
+      margin-top: 50px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* Responsive */
+    @media (max-width: 960px) {
+      .app-layout {
+        flex-direction: column;
+      }
+
+      aside.sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      main.main-content {
+        padding: 20px 18px 60px;
+      }
+
+      .hero-banner {
+        padding: 28px 20px;
+      }
+
+      .hero-title {
+        font-size: 1.8rem;
+      }
+
+      section.guide-section {
+        padding: 22px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+  <!-- SIDEBAR NAVIGATION: ALIGNED TO DEPLOYMENT FLOW -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-title">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Litera Server
+      </div>
+      <div class="brand-subtitle">deploy.ps1 Operations Guide</div>
+    </div>
+
+    <nav class="nav-group">
+      <div class="nav-label">Planning &amp; Configuration</div>
+      <a href="#overview" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        Overview &amp; Topologies
+      </a>
+      <a href="#guided-nav" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        Guided Navigation Menu
+      </a>
+      <a href="#wizard" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        Network &amp; SSL Wizard
+      </a>
+      <a href="#env-details" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Environment Configuration
+      </a>
+
+      <div class="nav-label" style="margin-top:10px;">Deployment Runtime Modes</div>
+      <a href="#server-deploy" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        Server Deploy (Native Node)
+      </a>
+      <a href="#portable-run" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        Portable Run Deployment
+      </a>
+      <a href="#docker-deploy" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11h16M4 15h16M10 3v4M14 3v4M6 7h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/></svg>
+        Docker Deployment
+      </a>
+      <a href="#iis-proxy" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        IIS Reverse Proxy (SSL)
+      </a>
+
+      <div class="nav-label" style="margin-top:10px;">Lifecycle &amp; Persistence</div>
+      <a href="#rebuild-update" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Rebuild &amp; Update Existing
+      </a>
+      <a href="#startup-task" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Windows Startup Task
+      </a>
+      <a href="#nssm-service" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+        Windows Service (NSSM)
+      </a>
+      <a href="#status-diagnostics" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        Diagnostics &amp; Recovery
+      </a>
+
+      <div class="nav-label" style="margin-top:10px;">Post-Deployment Setup</div>
+      <a href="#web-installer" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Web Installation Wizard
+      </a>
+      <a href="#reference-matrix" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Reference Matrix &amp; Links
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div>Script: <code>deploy.ps1</code></div>
+      <div>Documentation: <code>GUIDE.md</code></div>
+    </div>
+  </aside>
+
+  <!-- MAIN ARTICLE -->
+  <main class="main-content">
+    <!-- HERO -->
+    <header class="hero-banner">
+      <div class="hero-badge">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        Production Deployment Handbook
+      </div>
+      <h1 class="hero-title">Litera Compare Server Deployment Guide</h1>
+      <p class="hero-subtitle">
+        End-to-end operational handbook structured by deployment flow: from pre-flight diagnostics, network configuration, and runtime deployment to boot persistence and post-deployment web application initialization.
+      </p>
+      <div class="hero-meta-badges">
+        <span class="pill-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17l6-6-6-6M12 19h8"/></svg>
+          PowerShell 5.1 / 7.x
+        </span>
+        <span class="pill-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11h16M4 15h16M10 3v4M14 3v4"/></svg>
+          Docker Compose (v3.8)
+        </span>
+        <span class="pill-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          IIS 10.0 + URL Rewrite 2.1 + ARR 3.0
+        </span>
+        <span class="pill-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          Portable Node.js v25.9.0 win-x64
+        </span>
+        <span class="pill-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Auto-Start via Task Scheduler (SYSTEM)
+        </span>
+        <span class="pill-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/></svg>
+          Windows Service via NSSM v2.24
+        </span>
+      </div>
+    </header>
+
+    <!-- SECTION 1: OVERVIEW & ARCHITECTURE -->
+    <section id="overview" class="guide-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div>
+          <h2 class="section-title">1. Overview & Architecture</h2>
+          <div class="section-subtitle">Understanding the interactive PowerShell control panel and deployment options</div>
+        </div>
+      </div>
+
+      <p>
+        The <code>deploy.ps1</code> script is an automated, self-elevating operations dashboard engineered for Windows Server and client environments. It handles prerequisites, environment variables, IIS URL rewrite rules, Docker containers, process daemonization, diagnostics, and recovery.
+      </p>
+
+      <div class="grid-4">
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <span class="feature-card-icon">🖥️</span>
+            <div class="feature-card-title">Server Deploy</div>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            Uses machine-installed Node.js (or installs via winget). Compiles the React client and Node server into the root <code>dist\</code> directory.
+          </p>
+          <span class="status-badge badge-blue">Option 2</span>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <span class="feature-card-icon">📦</span>
+            <div class="feature-card-title">Portable Run</div>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            Zero machine dependencies. Downloads and isolates Node.js v25.9.0 inside <code>portable\node</code> and runs an isolated app build in <code>portable\app</code>.
+          </p>
+          <span class="status-badge badge-purple">Option 3</span>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <span class="feature-card-icon">🐳</span>
+            <div class="feature-card-title">Docker Deploy</div>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            Containerized Linux environment running Node.js via Docker Compose with persistent named volumes and optional SSL host mounts.
+          </p>
+          <span class="status-badge badge-blue">Option 1</span>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <span class="feature-card-icon">🌐</span>
+            <div class="feature-card-title">IIS Reverse Proxy</div>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            Terminates enterprise HTTPS via Windows IIS certificate store, proxying HTTP traffic down to internal Node.js on port 3000 via URL Rewrite.
+          </p>
+          <span class="status-badge badge-green">Option 5 &rarr; 3</span>
+        </div>
+      </div>
+
+      <div class="callout callout-warning">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div class="callout-body">
+          <div class="callout-title">PowerShell Script Execution Policy</div>
+          <p>
+            Ensure your Windows PowerShell execution policy permits executing local scripts. If script execution is blocked on your machine or server, run this command in PowerShell prior to launching <code>deploy.ps1</code>:
+            <br><code>Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned</code>
+          </p>
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <div class="callout-body">
+          <div class="callout-title">Interactive Navigation Controls</div>
+          <p>
+            Within any interactive menu or prompt inside <code>deploy.ps1</code>:
+            type <code>b</code> to return to the previous screen, <code>m</code> to return immediately to the Main Menu, <code>c</code> to cancel the current operation, or <code>q</code> to exit cleanly.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: GUIDED NAVIGATION MENU -->
+    <section id="guided-nav" class="guide-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div>
+          <h2 class="section-title">2. Guided Navigation Menu Options</h2>
+          <div class="section-subtitle">Complete hierarchy and step-by-step menu paths for all deployment operations</div>
+        </div>
+      </div>
+
+      <p>
+        The <code>deploy.ps1</code> script presents an interactive numbered terminal interface.
+        Below is the exact menu structure and the guided path required to execute every operational workflow:
+      </p>
+
+      <div class="menu-tree">
+        <div class="menu-tree-header">MAIN MENU (Deployment &amp; Control Panel)</div>
+        <div><span class="menu-tree-key">1.</span> Docker Deploy <span class="menu-tree-branch">&rarr; Submenu if container/image exists:</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="menu-tree-action">1.</span> Update (rebuild) existing image and deploy</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="menu-tree-action">2.</span> Deploy (start/restart) without rebuilding</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="menu-tree-action">3.</span> Stop existing container</div>
+        <br>
+        <div><span class="menu-tree-key">2.</span> Server Deploy (Native Node.js) <span class="menu-tree-branch">&rarr; Submenu if dist/ exists:</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="menu-tree-action">1.</span> Open Control Menu (Start / Stop / Restart / Logs)</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="menu-tree-action">2.</span> Rebuild and Update existing installation</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="menu-tree-action">3.</span> Uninstall (remove dist and node_modules)</div>
+        <br>
+        <div><span class="menu-tree-key">3.</span> Portable Run (Bundled Node.js v25.9.0) <span class="menu-tree-branch">&rarr; Submenu if portable\app\dist\ exists:</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="menu-tree-action">1.</span> Open Control Menu (Start / Stop / Restart / Logs)</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="menu-tree-action">2.</span> Rebuild and Update existing installation</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="menu-tree-action">3.</span> Uninstall portable app (remove portable\app)</div>
+        <br>
+        <div><span class="menu-tree-key">4.</span> Status Check <span class="menu-tree-branch">&rarr; Inspect Docker, Native Server, Portable Server, IIS bindings &amp; Cert expiry</span></div>
+        <br>
+        <div><span class="menu-tree-key">5.</span> Network &amp; SSL Configuration Wizard <span class="menu-tree-branch">&rarr; Update settings (y/N) &rarr; Select Topology:</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="menu-tree-action">1.</span> Standard / HTTP Only (No custom SSL)</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="menu-tree-action">2.</span> Native Node.js SSL (Direct HTTPS binding)</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="menu-tree-action">3.</span> IIS Reverse Proxy (with SSL)</div>
+        <br>
+        <div><span class="menu-tree-key">6.</span> Deployment Dry Run <span class="menu-tree-branch">&rarr; Non-destructive preview of configuration and build state</span></div>
+        <div><span class="menu-tree-key">7.</span> Backup Current Configuration <span class="menu-tree-branch">&rarr; Snapshot .env, web.config, IIS JSON to backups\</span></div>
+        <div><span class="menu-tree-key">8.</span> Repair IIS Reverse Proxy <span class="menu-tree-branch">&rarr; Reapplies ARR proxy, regenerates web.config, fixes ACLs &amp; Firewall</span></div>
+        <div><span class="menu-tree-key">9.</span> Create Diagnostics Bundle <span class="menu-tree-branch">&rarr; Packages redacted logs and build info to diagnostics\*.zip</span></div>
+        <div><span class="menu-tree-key">10.</span> Exit</div>
+        <br>
+        <div class="menu-tree-header">SERVER &amp; PORTABLE CONTROL SUBMENU (Show-ProcessMenu)</div>
+        <div><span class="menu-tree-key">1.</span> Start Server <span style="color:#94a3b8;">(or Stop Server if online)</span></div>
+        <div><span class="menu-tree-key">2.</span> Restart Server <span style="color:#94a3b8;">(available when online)</span></div>
+        <div><span class="menu-tree-key">3.</span> View Logs <span style="color:#94a3b8;">(displays last 30 lines of server.log and server.err.log)</span></div>
+        <div><span class="menu-tree-key">4.</span> Clear Logs <span style="color:#94a3b8;">(clears stdout and stderr files)</span></div>
+        <div><span class="menu-tree-key">5.</span> Register as Windows Startup Task <span style="color:#94a3b8;">(SYSTEM Scheduled Task running -AutoStart at boot)</span></div>
+        <div><span class="menu-tree-key">6.</span> Register as Windows Service (via NSSM, runs at boot) <span style="color:#94a3b8;">(supervises Node process via NSSM)</span></div>
+        <div><span class="menu-tree-key">b.</span> Back to Main Menu</div>
+      </div>
+
+      <h3>Quick Operation Breadcrumbs</h3>
+      <div class="grid-2">
+        <div class="feature-card">
+          <div class="feature-card-title">🚀 First-Time Native Server Setup</div>
+          <div class="menu-breadcrumb-box">
+            <span class="crumb-pill">Main Menu</span> <span class="crumb-sep">&rarr;</span>
+            <span class="crumb-pill">Option 5 (Wizard)</span> <span class="crumb-sep">&rarr;</span>
+            <span class="crumb-pill">Option 2 (Server Deploy)</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted);">
+            Configures network endpoints in <code>.env</code>, verifies Node.js, compiles root <code>dist\</code>, and opens the Control Menu.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-title">📦 First-Time Portable Run Setup</div>
+          <div class="menu-breadcrumb-box">
+            <span class="crumb-pill">Main Menu</span> <span class="crumb-sep">&rarr;</span>
+            <span class="crumb-pill">Option 5 (Wizard)</span> <span class="crumb-sep">&rarr;</span>
+            <span class="crumb-pill">Option 3 (Portable Run)</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted);">
+            Auto-downloads Portable Node.js v25.9.0 into <code>portable\node</code>, syncs source into <code>portable\app</code>, and compiles without machine admin.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-title">⏱️ Configure 24/7 Boot Auto-Start</div>
+          <div class="menu-breadcrumb-box">
+            <span class="crumb-pill">Option 2 or 3</span> <span class="crumb-sep">&rarr;</span>
+            <span class="crumb-pill">Control Menu</span> <span class="crumb-sep">&rarr;</span>
+            <span class="crumb-pill">Option 5 or 6</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted);">
+            Choose <strong>Option 5</strong> for a zero-footprint Task Scheduler task or <strong>Option 6</strong> for an NSSM-supervised auto-restarting Windows Service.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-title">🔄 Upgrade / Rebuild Codebase</div>
+          <div class="menu-breadcrumb-box">
+            <span class="crumb-pill">Option 2 or 3</span> <span class="crumb-sep">&rarr;</span>
+            <span class="crumb-pill">Option 2 (Rebuild &amp; Update)</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted);">
+            Prompts to adjust settings, creates automated backup in <code>backups\</code>, updates dependencies, rebuilds <code>dist</code>, and restarts server.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: NETWORK & SSL WIZARD -->
+    <section id="wizard" class="guide-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <div>
+          <h2 class="section-title">3. Network &amp; SSL Configuration Wizard</h2>
+          <div class="section-subtitle">Option 5 on the Main Menu — Configuring topology, ports, and certificates</div>
+        </div>
+      </div>
+
+      <p>
+        Selecting <strong>Option 5</strong> executes <code>Invoke-ConfigurationWizard</code>. The wizard first evaluates and displays the active configuration loaded from <code>.env</code>:
+      </p>
+
+      <div class="code-container">
+        <div class="code-header">Current Configuration Inspection</div>
+        <pre><code>======================================
+ Network &amp; SSL Configuration Wizard   
+======================================
+Current Configuration:
+App Name:       Litera Compare Server
+Hosting Mode:   IIS Reverse Proxy
+Internal Port:  3000 (Node.js binds to this)
+HTTP Port:      80 (Redirect)
+External URL:   https://compare.corp.local:443
+Cert Store:     Enabled (NODE_USE_SYSTEM_CA=1)
+
+Update these settings? (y/N):</code></pre>
+      </div>
+
+      <h3>Prompt Sequence & Topology Options</h3>
+      <p>
+        When answering <code>y</code>, the wizard prompts for the primary application metadata before presenting the three core hosting topologies:
+      </p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Wizard Step</th>
+              <th>Interactive Prompt</th>
+              <th>Allowed Inputs / Default</th>
+              <th>Effect & Target File</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. Application Name</strong></td>
+              <td><code>Enter App Name</code></td>
+              <td>Default: <code>$envAppName</code> (or "Litera Compare Server")</td>
+              <td>Updates <code>APP_NAME</code> in <code>.env</code>, controls dashboard banners, process logs, and task descriptions.</td>
+            </tr>
+            <tr>
+              <td><strong>2. Topology Choice</strong></td>
+              <td><code>Select Hosting Topology</code></td>
+              <td>
+                <code>1</code>: Standard / HTTP Only<br>
+                <code>2</code>: Native Node.js SSL<br>
+                <code>3</code>: IIS Reverse Proxy (with SSL)
+              </td>
+              <td>Branches the wizard into protocol-specific parameter collection and system prerequisite checks.</td>
+            </tr>
+            <tr>
+              <td><strong>Topology 1</strong><br>(Standard / HTTP)</td>
+              <td>
+                • <code>Enter Internal Node.js Port</code><br>
+                • <code>Enter External URL / FQDN</code>
+              </td>
+              <td>
+                • Default: <code>3000</code><br>
+                • Default: <code>http://localhost:3000</code>
+              </td>
+              <td>
+                Validates port availability (alerts if in use). Strips any SSL keys from <code>.env</code>. Writes <code>PORT</code> and <code>APP_URL</code>.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Topology 2</strong><br>(Native Node SSL)</td>
+              <td>
+                • <code>Enter FQDN</code><br>
+                • <code>Enter Public HTTPS Port</code><br>
+                • <code>Enter HTTP Port (for redirect)</code><br>
+                • <code>Enter Cert path (.pem/.crt)</code><br>
+                • <code>Enter Key path (.pem/.key)</code>
+              </td>
+              <td>
+                • FQDN format check<br>
+                • Default: <code>443</code><br>
+                • Optional (e.g. <code>80</code>)<br>
+                • Absolute file path<br>
+                • Absolute file path
+              </td>
+              <td>
+                Sets <code>USE_NATIVE_SSL=true</code>. Automatically creates Windows Firewall inbound rules for HTTPS/HTTP ports via <code>New-NetFirewallRule</code>. Configures <code>NODE_USE_SYSTEM_CA</code>.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Topology 3</strong><br>(IIS Reverse Proxy)</td>
+              <td>
+                • Pre-flight IIS Module Verification<br>
+                • <code>Enter FQDN</code><br>
+                • <code>Enter Public HTTPS Port</code><br>
+                • <code>Enter HTTP Port</code><br>
+                • <code>Enter Internal Node.js Port</code><br>
+                • <code>Enter Certificate Thumbprint</code><br>
+                • <code>Enter IIS Site Name</code>
+              </td>
+              <td>
+                • Checks IIS, URL Rewrite, ARR<br>
+                • Domain name (e.g. <code>compare.domain.com</code>)<br>
+                • Default: <code>443</code><br>
+                • Optional (e.g. <code>80</code>)<br>
+                • Default: <code>3000</code><br>
+                • Hex thumbprint in <code>Cert:\LocalMachine\My</code><br>
+                • Default: <code>LiteraCompare</code>
+              </td>
+              <td>
+                Sets <code>USE_NATIVE_SSL=false</code>. Creates IIS Site and HTTPS binding, attaches SSL certificate, grants NTFS permissions to <code>BUILTIN\IIS_IUSRS</code> and <code>IUSR</code>, and generates root <code>web.config</code> rewrite rules.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-warning">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div class="callout-body">
+          <div class="callout-title">Windows Trusted Root &amp; NODE_USE_SYSTEM_CA</div>
+          <p>
+            When choosing an SSL topology, the wizard asks whether to set <code>NODE_USE_SYSTEM_CA=1</code> in the Machine environment.
+            This allows Node.js to trust internal enterprise/self-signed CAs imported into the Windows Certificate Store.
+            <strong>Requirements:</strong> Node.js must be v22.19.0+ or v24.6.0+ (the wizard checks this via <code>Test-NodeSupportsSystemCa</code>).
+            Additionally, the CA certificate must reside in <strong>Local Computer\Trusted Root Certification Authorities</strong>; merely binding it in IIS is not sufficient for Node's internal fetch requests.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ENVIRONMENT CONFIGURATION -->
+    <section id="env-details" class="guide-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <div>
+          <h2 class="section-title">4. Environment Configuration (.env)</h2>
+          <div class="section-subtitle">Deep dive into state synchronization, port conflict detection, and variable mapping</div>
+        </div>
+      </div>
+
+      <p>
+        Whenever changes are applied in the Configuration Wizard, <code>deploy.ps1</code> surgically updates the project's root <code>.env</code> file. Existing database connection strings, JWT secrets, and custom variables are preserved, while network-related variables are updated cleanly.
+      </p>
+
+      <h3>Environment Key Reference</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Variable Key</th>
+              <th>Topology</th>
+              <th>Example Value</th>
+              <th>Description & Node Behavior</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>APP_NAME</code></td>
+              <td>All</td>
+              <td><code>"Litera Compare Server"</code></td>
+              <td>Displayed in the web title bar, installer header, and PowerShell dashboard.</td>
+            </tr>
+            <tr>
+              <td><code>PORT</code></td>
+              <td>Standard</td>
+              <td><code>3000</code></td>
+              <td>The network port on which the Express/Node.js application binds and accepts connections.</td>
+            </tr>
+            <tr>
+              <td><code>PORT</code></td>
+              <td>IIS Proxy</td>
+              <td><code>3000</code></td>
+              <td>The internal loopback port. Node listens on <code>127.0.0.1:3000</code>. Public requests hit IIS (443) and are rewritten to this port.</td>
+            </tr>
+            <tr>
+              <td><code>PORT</code></td>
+              <td>Native SSL</td>
+              <td><code>443</code> (or <code>8443</code>)</td>
+              <td>Public HTTPS port directly bound by Node.js using native TLS sockets.</td>
+            </tr>
+            <tr>
+              <td><code>HTTP_PORT</code></td>
+              <td>Native / IIS</td>
+              <td><code>80</code></td>
+              <td>Optional HTTP port used for redirecting unencrypted traffic to HTTPS.</td>
+            </tr>
+            <tr>
+              <td><code>APP_URL</code></td>
+              <td>All</td>
+              <td><code>https://compare.corp.local</code></td>
+              <td>External public URL used by client browsers, Office 365 Add-in manifests, and OAuth callback URLs.</td>
+            </tr>
+            <tr>
+              <td><code>USE_NATIVE_SSL</code></td>
+              <td>Native / IIS</td>
+              <td><code>true</code> or <code>false</code></td>
+              <td><code>true</code>: Node reads cert/key directly. <code>false</code>: Node serves plain HTTP; IIS handles TLS termination.</td>
+            </tr>
+            <tr>
+              <td><code>SSL_CERT_PATH</code></td>
+              <td>Native SSL</td>
+              <td><code>C:\Certs\server.crt</code></td>
+              <td>Absolute path to public certificate (PEM or CRT format).</td>
+            </tr>
+            <tr>
+              <td><code>SSL_KEY_PATH</code></td>
+              <td>Native SSL</td>
+              <td><code>C:\Certs\server.key</code></td>
+              <td>Absolute path to unencrypted RSA/ECC private key file.</td>
+            </tr>
+            <tr>
+              <td><code>NODE_USE_SYSTEM_CA</code></td>
+              <td>System Env</td>
+              <td><code>1</code></td>
+              <td>Machine environment variable directing Node v22.19+ to query Windows CAPI root certificate stores.</td>
+            </tr>
+            <tr>
+              <td><code>DB_PATH</code></td>
+              <td>Storage</td>
+              <td><code>server/data/app.db</code></td>
+              <td>Path to SQLite database storing server configs, admin credentials, user settings, and comparison logs.</td>
+            </tr>
+            <tr>
+              <td><code>SESSION_SECRET</code></td>
+              <td>Security</td>
+              <td><code>"change-this-to-a-secure-random-key"</code></td>
+              <td>Secret key used for signing and validating admin session cookies and authentication tokens.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-danger">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div class="callout-body">
+          <div class="callout-title">Production Security: SESSION_SECRET</div>
+          <p>
+            Always configure a unique, cryptographically strong <code>SESSION_SECRET</code> in production environments. Never commit production <code>.env</code> files or session secrets to source control.
+          </p>
+        </div>
+      </div>
+
+      <h3>Automated Port Conflict Detection</h3>
+      <p>
+        During wizard execution, <code>deploy.ps1</code> invokes <code>Check-PortAvailable</code> and <code>Get-PortUsageInfo</code> via <code>Get-NetTCPConnection</code>.
+        If a target port is occupied, the script displays the owning process and PID, allowing the administrator to terminate the conflicting process or choose another port:
+      </p>
+
+      <div class="code-container">
+        <div class="code-header">Port Conflict Resolution Output</div>
+        <pre><code>[!] Port Conflict Detected on 3000:
+ProcessName   PID State  Port
+-----------   --- -----  ----
+node         8412 Listen 3000
+
+Would you like to forcefully stop this process to free the port? (y/N)</code></pre>
+      </div>
+    </section>
+
+    <!-- SECTION 5: SERVER DEPLOY (NATIVE NODE.JS) -->
+    <section id="server-deploy" class="guide-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div>
+          <h2 class="section-title">5. Server Deploy (Native Node.js)</h2>
+          <div class="section-subtitle">Option 2 on the Main Menu — Direct host deployment utilizing machine-installed Node.js</div>
+        </div>
+      </div>
+
+      <p>
+        <strong>Server Deploy</strong> compiles and executes Litera Compare Server directly on the host operating system.
+        It utilizes the machine's installed Node.js runtime (v20+ LTS recommended) and builds production bundles into the root <code>dist\</code> directory.
+      </p>
+
+      <h3>Execution Workflow</h3>
+      <ol class="steps-list">
+        <li>Select <strong>Option 2: Server Deploy</strong> from the Main Menu.</li>
+        <li>The script checks for <code>node</code>. If missing, it offers automatic installation via <code>winget install OpenJS.NodeJS -e --source winget</code> or opens the official Node.js download page.</li>
+        <li>If <code>dist\index.html</code> does not exist, the script runs <code>npm install</code> followed by <code>npm run build</code>.</li>
+        <li>When compilation succeeds, it sets <code>NODE_ENV=production</code> and launches the <strong>Server Control Menu</strong>.</li>
+        <li>From the Control Menu, choose <strong>1. Start Server</strong> to run the server in the background with output redirected to <code>logs\server.log</code>.</li>
+      </ol>
+    </section>
+
+    <!-- SECTION 6: PORTABLE RUN DEPLOYMENT -->
+    <section id="portable-run" class="guide-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        </div>
+        <div>
+          <h2 class="section-title">6. Portable Run Deployment</h2>
+          <div class="section-subtitle">Option 3 on the Main Menu — Zero-dependency bundled runtime and isolated application container</div>
+        </div>
+      </div>
+
+      <p>
+        <strong>Portable Run</strong> enables deploying Litera Compare Server on secure, locked-down Windows servers without requiring system-wide Node.js installations, administrative MSI installers, or external package managers.
+      </p>
+
+      <div class="credential-box">
+        <div class="cred-item">
+          <span class="cred-label">Default Admin Login:</span>
+          <span class="cred-val">Admin</span>
+        </div>
+        <div class="cred-item">
+          <span class="cred-label">Default Admin Password:</span>
+          <span class="cred-val">123456</span>
+        </div>
+        <div class="cred-item">
+          <span class="cred-label">Database Persistence:</span>
+          <span class="cred-val">portable\app\server\data\app.db</span>
+        </div>
+      </div>
+
+      <div class="callout callout-success">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        <div class="callout-body">
+          <div class="callout-title">Portable Node.js Version for Auto-Download: Node.js v25.9.0 win-x64</div>
+          <p>
+            When <code>portable\node</code> is not present, <code>deploy.ps1</code> downloads the official 64-bit Windows release of <strong>Node.js v25.9.0</strong> directly from nodejs.org:
+            <br><code>https://nodejs.org/dist/latest-v25.x/node-v25.9.0-win-x64.zip</code>.
+            The script expands the archive into <code>portable\node\</code> and runs <code>Get-PortableNodeVersion</code> to verify that <code>portable\node\node.exe -v</code> reports valid execution. All compilation and dependency steps invoke <code>portable\node\npm.cmd</code> directly without modifying machine PATH.
+          </p>
+        </div>
+      </div>
+
+      <h3>Directory Layout & Component Isolation</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>File / Folder Path</th>
+              <th>Isolation Boundary</th>
+              <th>Purpose & Lifecycle</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>portable\node\</code></td>
+              <td>Runtime Engine</td>
+              <td>Contains bundled <code>node.exe</code>, <code>npm.cmd</code>, and core libraries. Downloaded once (Node v25.9.0 win-x64) and isolated from system PATH.</td>
+            </tr>
+            <tr>
+              <td><code>portable\app\</code></td>
+              <td>Application Mirror</td>
+              <td>An isolated copy of the application source code, Vite build config, and standalone <code>dist\</code> build.</td>
+            </tr>
+            <tr>
+              <td><code>portable\app\node_modules\</code></td>
+              <td>Dependency Tree</td>
+              <td>Isolated NPM packages installed exclusively using the portable binary.</td>
+            </tr>
+            <tr>
+              <td><code>portable\app\server\data\</code></td>
+              <td>Persistent Storage</td>
+              <td>Contains SQLite databases (<code>app.db</code>), licenses, and uploaded comparison documents. <strong>Never overwritten</strong> during source code syncs.</td>
+            </tr>
+            <tr>
+              <td><code>portable\server.pid</code></td>
+              <td>Process State</td>
+              <td>Stores the PID of the background Node.js process managed by the portable control menu.</td>
+            </tr>
+            <tr>
+              <td><code>portable\server.log</code><br><code>portable\server.err.log</code></td>
+              <td>Logging Engine</td>
+              <td>Standard output and error streams captured during background execution.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>The Application Synchronization Mechanism (Sync-PortableApplication)</h3>
+      <p>
+        When initializing or updating a Portable Run, <code>deploy.ps1</code> executes <code>Sync-PortableApplication</code>.
+        It copies only the required application assets from the repository root into <code>portable\app\</code>, ensuring full isolation while protecting runtime databases:
+      </p>
+
+      <div class="code-container">
+        <div class="code-header">Synchronized Asset Filter</div>
+        <pre><code># Root configuration files synchronized:
+.env, .env.example, index.html, metadata.json, package.json, 
+package-lock.json, tsconfig.json, tsconfig.base.json, vite.config.ts
+
+# Client application source directories synchronized:
+addin\, admin\, assets\, src\, viewer\
+
+# Backend server source directories synchronized:
+server\package.json, server\package-lock.json, server\src\
+# Note: server\data\ is intentionally PRESERVED to prevent data loss.</code></pre>
+      </div>
+
+      <h3>First-Time Setup Flow</h3>
+      <ol class="steps-list">
+        <li>Select <strong>Option 3: Portable Run</strong> from the Main Menu.</li>
+        <li>If <code>portable\node</code> is missing, choose <code>1. Auto-download and setup Portable Node.js (v25.9.0)</code>.</li>
+        <li>The zip archive is downloaded, expanded into <code>portable\node</code>, and verified.</li>
+        <li>The application files are synchronized into <code>portable\app</code>.</li>
+        <li>The script executes <code>npm install</code> and <code>npm run build</code> using the isolated portable binaries.</li>
+        <li>The <strong>Server Control Menu</strong> launches, allowing administrators to start the service, view logs, or register boot tasks. Sign in with <strong><code>Admin:123456</code></strong>.</li>
+      </ol>
+    </section>
+
+    <!-- SECTION 7: DOCKER DEPLOYMENT -->
+    <section id="docker-deploy" class="guide-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11h16M4 15h16M10 3v4M14 3v4M6 7h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/></svg>
+        </div>
+        <div>
+          <h2 class="section-title">7. Docker Deployment</h2>
+          <div class="section-subtitle">Option 1 on the Main Menu — Containerized deployment via Docker Desktop & Docker Compose</div>
+        </div>
+      </div>
+
+      <p>
+        Selecting <strong>Option 1: Docker Deploy</strong> invokes <code>Invoke-DockerDeploy</code>.
+        It encapsulates the Litera Compare Server into an isolated Docker container using Docker Compose, providing environment consistency and automated volume management.
+      </p>
+
+      <h3>Prerequisites & Engine Startup Check</h3>
+      <ol class="steps-list">
+        <li>
+          <strong>Docker CLI Detection:</strong> The script tests for the <code>docker</code> command via <code>Get-Command docker</code>. If Docker is not installed, it offers to open the official download page:
+          <a href="https://docs.docker.com/desktop/install/windows-install/" target="_blank" rel="noopener">Docker Desktop Windows Installer</a>.
+        </li>
+        <li>
+          <strong>Docker Engine Daemon Check:</strong> Executes <code>docker info</code>. If the daemon is not running, the script offers to launch Docker Desktop automatically:
+          <code>Start-Process "C:\Program Files\Docker\Docker\Docker Desktop.exe"</code>.
+          It then polls the engine status every 5 seconds for up to 60 seconds until the daemon reports ready.
+        </li>
+        <li>
+          <strong>Sanitized Container Naming:</strong> The container name is derived from <code>$global:AppName</code> by converting to lowercase, stripping non-alphanumeric characters, and collapsing multiple hyphens (e.g. <code>Litera Compare Server</code> becomes <code>litera-compare-server</code>).
+        </li>
+      </ol>
+
+      <h3>Existing Container Management Submenu</h3>
+      <p>
+        If an image or container matching the application name already exists (checked via <code>docker images -q</code> and <code>docker ps -a -q</code>), <code>deploy.ps1</code> presents a management submenu:
+      </p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Option Key</th>
+              <th>Action</th>
+              <th>Execution Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1</strong></td>
+              <td>Update (rebuild) existing image and deploy</td>
+              <td>
+                Calls <code>Confirm-DeploymentSettingsUpdate</code> (allowing network/port updates), takes a backup via <code>New-ConfigurationBackup -Reason "docker-rebuild"</code>, regenerates <code>docker-compose.yml</code>, stops old containers, and executes <code>docker compose up -d --build</code>.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>2</strong></td>
+              <td>Deploy (start/restart) without rebuilding</td>
+              <td>
+                Bypasses image rebuilding, stops the previous container, and launches immediately via <code>docker compose up -d</code>.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>3</strong></td>
+              <td>Stop existing container</td>
+              <td>
+                Runs <code>docker compose down</code> and <code>docker rm -f $ContainerName</code>, stopping and removing the running container cleanly.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Automated docker-compose.yml Generation</h3>
+      <p>
+        Before launching, <code>deploy.ps1</code> writes a fresh <code>docker\docker-compose.yml</code> file configured for your port, persistence, and SSL settings:
+      </p>
+
+      <div class="code-container">
+        <div class="code-header">docker\docker-compose.yml Structure</div>
+        <pre><code>name: litera-compare-server
+version: '3.8'
+services:
+  server:
+    build: 
+      context: ../
+      dockerfile: docker/Dockerfile
+    image: litera-compare-server
+    container_name: litera-compare-server
+    ports:
+      - "3000:3000"
+    volumes:
+      - litera-compare-data:/app/server/data
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  litera-compare-data:</code></pre>
+      </div>
+
+      <div class="callout callout-info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <div class="callout-body">
+          <div class="callout-title">SSL Volume Mounts in Docker Mode</div>
+          <p>
+            If <code>USE_NATIVE_SSL=true</code> is configured in <code>.env</code>, the script automatically parses <code>SSL_CERT_PATH</code> and <code>SSL_KEY_PATH</code>.
+            It injects environment variables <code>SSL_CERT_PATH=/certs/server.crt</code> and <code>SSL_KEY_PATH=/certs/server.key</code> into the compose file and mounts the host certificate and key files read-only (<code>:ro</code>) into the container's <code>/certs/</code> volume.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: IIS REVERSE PROXY -->
+    <section id="iis-proxy" class="guide-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div>
+          <h2 class="section-title">8. IIS Reverse Proxy (with SSL)</h2>
+          <div class="section-subtitle">Dedicated enterprise configuration, ARR server proxy, certificates, and web.config generation</div>
+        </div>
+      </div>
+
+      <p>
+        The IIS Reverse Proxy configuration delivers an enterprise-grade front-end: Windows Internet Information Services (IIS) manages TLS 1.2/1.3 handshakes and certificate renewals, proxying clean HTTP requests to the internal Node.js backend running on <code>127.0.0.1:3000</code>.
+      </p>
+
+      <!-- Architecture Diagram SVG -->
+      <div style="background: #0f172a; padding: 24px; border-radius: var(--radius-md); margin: 20px 0; text-align: center;">
+        <svg viewBox="0 0 820 180" width="100%" height="180" style="max-width: 820px; font-family: Segoe UI, sans-serif;">
+          <!-- Client Box -->
+          <rect x="20" y="55" width="140" height="70" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+          <text x="90" y="88" fill="#f8fafc" font-size="14" font-weight="bold" text-anchor="middle">Browser / Word</text>
+          <text x="90" y="108" fill="#94a3b8" font-size="11" text-anchor="middle">HTTPS / Port 443</text>
+
+          <!-- Arrow 1 -->
+          <line x1="160" y1="90" x2="230" y2="90" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4"/>
+          <polygon points="230,90 222,85 222,95" fill="#38bdf8"/>
+          <text x="195" y="78" fill="#38bdf8" font-size="10" font-weight="bold" text-anchor="middle">TLS / HTTPS</text>
+
+          <!-- IIS Box -->
+          <rect x="240" y="30" width="280" height="120" rx="10" fill="#1e293b" stroke="#34d399" stroke-width="2"/>
+          <text x="380" y="58" fill="#34d399" font-size="15" font-weight="bold" text-anchor="middle">IIS 10.0 Reverse Proxy</text>
+          <text x="380" y="78" fill="#e2e8f0" font-size="11" text-anchor="middle">TLS Termination (Cert:\LocalMachine\My)</text>
+          <text x="380" y="98" fill="#94a3b8" font-size="11" text-anchor="middle">URL Rewrite Rule: "ProxyToNode"</text>
+          <text x="380" y="118" fill="#94a3b8" font-size="11" text-anchor="middle">ARR Server Proxy Engine (Enabled)</text>
+
+          <!-- Arrow 2 -->
+          <line x1="520" y1="90" x2="590" y2="90" stroke="#34d399" stroke-width="2"/>
+          <polygon points="590,90 582,85 582,95" fill="#34d399"/>
+          <text x="555" y="78" fill="#34d399" font-size="10" font-weight="bold" text-anchor="middle">HTTP :3000</text>
+
+          <!-- Node Box -->
+          <rect x="600" y="55" width="180" height="70" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+          <text x="690" y="88" fill="#f8fafc" font-size="14" font-weight="bold" text-anchor="middle">Node.js / Express</text>
+          <text x="690" y="108" fill="#f59e0b" font-size="11" text-anchor="middle">127.0.0.1:3000 (Loopback)</text>
+        </svg>
+      </div>
+
+      <h3>Automated IIS Prerequisite Verification</h3>
+      <p>
+        Unlike manual setups, selecting IIS Reverse Proxy in <code>deploy.ps1</code> immediately verifies system modules before asking for domain or certificate details:
+      </p>
+
+      <ul class="bullet-list">
+        <li>
+          <strong>IIS Core Role:</strong> Checks registry key <code>HKLM:\SOFTWARE\Microsoft\InetStp</code>. If absent and the user is an Administrator, it offers automated installation via <code>Enable-WindowsOptionalFeature -Online -FeatureName IIS-WebServerRole -All</code>.
+        </li>
+        <li>
+          <strong>IIS URL Rewrite Module:</strong> Checks <code>HKLM:\SOFTWARE\Microsoft\IIS Extensions\URL Rewrite</code>. Download link: <a href="https://www.iis.net/downloads/microsoft/url-rewrite" target="_blank" rel="noopener">Microsoft URL Rewrite 2.1</a>.
+        </li>
+        <li>
+          <strong>Application Request Routing (ARR):</strong> Checks <code>HKLM:\SOFTWARE\Microsoft\IIS Extensions\Application Request Routing</code>. Download link: <a href="https://www.iis.net/downloads/microsoft/application-request-routing" target="_blank" rel="noopener">Microsoft ARR 3.0</a>.
+        </li>
+        <li>
+          <strong>ARR Server Proxy Enabled:</strong> Queries <code>Get-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST' -filter "system.webServer/proxy" -name "enabled"</code>. If disabled, it opens IIS Manager (<code>inetmgr</code>) and provides step-by-step instructions.
+        </li>
+      </ul>
+
+      <h3>Step-by-Step Configuration Flow</h3>
+      <ol class="steps-list">
+        <li>
+          <strong>FQDN &amp; Public Port:</strong> Enter the fully qualified domain name (e.g. <code>compare.firm.com</code>) and the public HTTPS port (default <code>443</code>).
+        </li>
+        <li>
+          <strong>Internal Node.js Port:</strong> Enter the loopback port for the Node process (default <code>3000</code>).
+        </li>
+        <li>
+          <strong>SSL Certificate Thumbprint:</strong> Paste the 40-character SHA-1 certificate thumbprint.
+          The script cleans all spaces and validates that the certificate exists in <code>Cert:\LocalMachine\My</code> and possesses an exportable private key (<code>$cert.HasPrivateKey -eq $true</code>).
+        </li>
+        <li>
+          <strong>IIS Site Creation:</strong> Checks whether the IIS Site exists. If present, it allows replacing the site, renaming it, or backing up the previous configuration before recreation.
+        </li>
+        <li>
+          <strong>NTFS Security ACLs:</strong> Automatically grants <code>ReadAndExecute</code> inheritance on the project root folder to both <code>BUILTIN\IIS_IUSRS</code> and the anonymous worker account <code>IUSR</code> (SID <code>S-1-5-17</code>).
+        </li>
+        <li>
+          <strong>Reverse Proxy web.config Generation:</strong> Writes the exact URL Rewrite configuration to <code>web.config</code> in the project root.
+        </li>
+      </ol>
+
+      <div class="code-container">
+        <div class="code-header">Generated web.config (Root Directory)</div>
+        <pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;configuration&gt;
+    &lt;system.webServer&gt;
+        &lt;rewrite&gt;
+            &lt;rules&gt;
+                &lt;rule name="ProxyToNode" stopProcessing="true"&gt;
+                    &lt;match url="(.*)" /&gt;
+                    &lt;action type="Rewrite" url="http://127.0.0.1:3000/{R:1}" /&gt;
+                &lt;/rule&gt;
+            &lt;/rules&gt;
+        &lt;/rewrite&gt;
+    &lt;/system.webServer&gt;
+&lt;/configuration&gt;</code></pre>
+      </div>
+
+      <div class="callout callout-warning">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div class="callout-body">
+          <div class="callout-title">Handling COM Error 0x80070520 (Logon Session Does Not Exist)</div>
+          <p>
+            If PowerShell throws <code>0x80070520</code> during certificate binding, Windows security is preventing the automated attachment of the private key.
+            The site and rewrite rules are still created successfully. To resolve:
+            open <strong>IIS Manager (inetmgr)</strong>, select the site (e.g. <code>LiteraCompare</code>), click <strong>Bindings...</strong> in the right pane, select the HTTPS binding, click <strong>Edit...</strong>, pick your certificate from the dropdown, and click <strong>OK</strong>.
+          </p>
+        </div>
+      </div>
+
+      <h3>Repairing the IIS Reverse Proxy</h3>
+      <p>
+        If site bindings, URL Rewrite rules, or firewall settings are corrupted, select <strong>Option 8: Repair IIS Reverse Proxy</strong> from the Main Menu.
+        This function:
+      </p>
+      <ul class="bullet-list">
+        <li>Enables ARR Proxy at the machine root (<code>MACHINE/WEBROOT/APPHOST</code>).</li>
+        <li>Regenerates a fresh, verified <code>web.config</code> proxying to <code>127.0.0.1:$global:Port</code>.</li>
+        <li>Re-applies NTFS permissions for <code>BUILTIN\IIS_IUSRS</code> and <code>IUSR</code>.</li>
+        <li>Checks for an Inbound Windows Firewall rule named <code>"Litera IIS HTTPS Port &lt;Port&gt;"</code> and creates it if missing.</li>
+        <li>Starts the IIS site and executes an automated health check against both loopback and external URLs.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 9: REBUILD & UPDATE EXISTING -->
+    <section id="rebuild-update" class="guide-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        </div>
+        <div>
+          <h2 class="section-title">9. Rebuild and Update Existing Installation</h2>
+          <div class="section-subtitle">Seamless code upgrades, Node.js version validation, backups, and zero-downtime restarts</div>
+        </div>
+      </div>
+
+      <p>
+        When an existing build is detected in either the native directory (<code>dist\index.html</code>) or the portable directory (<code>portable\app\dist\index.html</code>), selecting that deployment mode in <code>deploy.ps1</code> presents an installation management submenu:
+      </p>
+
+      <div class="credential-box">
+        <div class="cred-item">
+          <span class="cred-label">Admin Login Preserved Across Rebuilds:</span>
+          <span class="cred-val">Admin</span>
+        </div>
+        <div class="cred-item">
+          <span class="cred-label">Admin Password:</span>
+          <span class="cred-val">123456</span>
+        </div>
+        <div class="cred-item">
+          <span class="cred-label">User Accounts & Data:</span>
+          <span class="cred-val">Preserved in app.db</span>
+        </div>
+      </div>
+
+      <div class="code-container">
+        <div class="code-header">Installation Detected Submenu</div>
+        <pre><code>Existing installation found in dist folder.
+ 1. Open Control Menu (Start / Stop / Restart / Logs)
+ 2. Rebuild and Update existing installation
+ 3. Uninstall (remove dist and node_modules)</code></pre>
+      </div>
+
+      <h3>System Node.js Version & Build State Inspection</h3>
+      <p>
+        Prior to performing an update on an existing installation, <code>deploy.ps1</code> evaluates the runtime environment:
+      </p>
+      <ul class="bullet-list">
+        <li>
+          <strong>System Node.js Detection:</strong> Queries <code>node -v</code>. If Node is not installed, it offers an automated install via <code>winget install OpenJS.NodeJS -e --source winget</code> or opens the official Node.js download portal.
+        </li>
+        <li>
+          <strong>Node.js Feature Support (Test-NodeSupportsSystemCa):</strong>
+          Evaluates whether the installed Node.js version supports <code>NODE_USE_SYSTEM_CA</code>.
+          Node.js only honors this environment variable on versions <strong>v22.19.0+</strong> or <strong>v24.6.0+</strong>.
+          The script extracts the major and minor numbers from <code>node -v</code> to determine whether system certificate store integration is supported.
+        </li>
+        <li>
+          <strong>Application Build Metadata (Get-AppBuildInfo):</strong>
+          Reads the version string from <code>package.json</code> and extracts the exact timestamp of the current <code>dist\</code> folder. This allows administrators to confirm the build age before updating.
+        </li>
+      </ul>
+
+      <h3>Update Lifecycle Steps</h3>
+      <p>
+        Selecting <strong>Option 2: Rebuild and Update existing installation</strong> initiates a safe, automated update sequence:
+      </p>
+
+      <div class="grid-2">
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <span class="feature-card-icon">1</span>
+            <div class="feature-card-title">Pre-Rebuild Settings Confirmation</div>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">
+            <code>Confirm-DeploymentSettingsUpdate</code> displays the active URL, ports, and mode.
+            It asks: <code>Update deployment settings before rebuilding? (y/N)</code>.
+            Typing <code>y</code> opens the Configuration Wizard immediately, allowing network adjustments before building.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <span class="feature-card-icon">2</span>
+            <div class="feature-card-title">Automated Configuration Backup</div>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">
+            <code>New-ConfigurationBackup</code> creates a timestamped folder under <code>backups\YYYYMMDD-HHmmss-rebuild\</code>.
+            It archives <code>.env</code>, <code>web.config</code>, IIS site metadata (<code>iis-sites.json</code>), and <code>build-info.json</code>.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <span class="feature-card-icon">3</span>
+            <div class="feature-card-title">State Capture & Clean Teardown</div>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">
+            <code>Test-ServerRunning</code> checks whether the application is active. The boolean is saved to <code>$wasRunning</code>.
+            <code>Stop-ServerIfRunning</code> kills the active PID cleanly via <code>taskkill /PID $pid /T /F</code>.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <span class="feature-card-icon">4</span>
+            <div class="feature-card-title">Source Sync, Compile & Restore</div>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">
+            For portable run, <code>Sync-PortableApplication</code> updates source code while preserving <code>portable\app\server\data\app.db</code> (retaining all administrator logins including <code>Admin:123456</code>).
+            <code>npm install</code> and <code>npm run build</code> compile the React frontend.
+            If <code>$wasRunning</code> was true, the server is restarted automatically in the background.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 10: WINDOWS STARTUP TASK -->
+    <section id="startup-task" class="guide-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div>
+          <h2 class="section-title">10. Windows Startup Task</h2>
+          <div class="section-subtitle">Automated system boot persistence via Windows Task Scheduler (Control Menu Option 5)</div>
+        </div>
+      </div>
+
+      <p>
+        From within the <strong>Server Control Menu</strong> or <strong>Portable Control Menu</strong>, choosing <strong>Option 5</strong> registers a native Windows Scheduled Task configured to launch the server as soon as the operating system boots—even before any user logs in.
+      </p>
+
+      <h3>Task Scheduler Implementation Parameters</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Configured Value in deploy.ps1</th>
+              <th>Technical Rationale</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Task Name</strong></td>
+              <td>User input (e.g. <code>LiteraCompareServer</code>)</td>
+              <td>Identifies the task in Windows Task Scheduler (<code>taskschd.msc</code>). Any existing task with this name is unregistered first.</td>
+            </tr>
+            <tr>
+              <td><strong>Action Binary</strong></td>
+              <td><code>powershell.exe</code></td>
+              <td>Executes standard Windows PowerShell.</td>
+            </tr>
+            <tr>
+              <td><strong>Action Arguments</strong></td>
+              <td><code>-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "&lt;Root&gt;\deploy.ps1" -AutoStart</code></td>
+              <td>Runs invisibly in the background without user prompts, executing the specialized <code>-AutoStart</code> routine.</td>
+            </tr>
+            <tr>
+              <td><strong>Trigger</strong></td>
+              <td><code>New-ScheduledTaskTrigger -AtStartup</code></td>
+              <td>Fires immediately upon Windows boot completion, requiring no interactive user logon.</td>
+            </tr>
+            <tr>
+              <td><strong>Principal User</strong></td>
+              <td><code>"SYSTEM"</code></td>
+              <td>Runs under the local <code>NT AUTHORITY\SYSTEM</code> service account.</td>
+            </tr>
+            <tr>
+              <td><strong>Run Level</strong></td>
+              <td><code>Highest</code> (LogonType: <code>ServiceAccount</code>)</td>
+              <td>Bypasses UAC restrictions and provides unrestricted local port-binding authority.</td>
+            </tr>
+            <tr>
+              <td><strong>Task Settings</strong></td>
+              <td>
+                • <code>-AllowStartIfOnBatteries</code><br>
+                • <code>-DontStopIfGoingOnBatteries</code><br>
+                • <code>-StartWhenAvailable</code><br>
+                • <code>-ExecutionTimeLimit (10 Years)</code>
+              </td>
+              <td>Prevents Windows from suspending the server process during power transitions or idle states, ensuring continuous 24/7 uptime.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>How the -AutoStart Switch Works</h3>
+      <p>
+        When <code>deploy.ps1</code> is invoked with the <code>-AutoStart</code> switch, it bypasses the interactive terminal UI and executes this automated bootstrap logic:
+      </p>
+
+      <ol class="steps-list">
+        <li>
+          <strong>Runtime Detection:</strong> Inspects whether <code>portable\node</code> and <code>portable\app</code> exist.
+          If found, it automatically sets the working folder to <code>portable\app</code> and targets <code>portable\node\npm.cmd</code>.
+          Otherwise, it defaults to the project root and machine-installed <code>npm.cmd</code>.
+        </li>
+        <li>
+          <strong>PID Cleanup:</strong> Reads any existing <code>server.pid</code> in the target log directory. If an old process is running, it terminates it immediately to prevent port collision.
+        </li>
+        <li>
+          <strong>Background Launch:</strong> Starts the Node server process in hidden mode (<code>-WindowStyle Hidden</code>), redirects <code>stdout</code> to <code>server.log</code> and <code>stderr</code> to <code>server.err.log</code>, and writes the new process ID into <code>server.pid</code>.
+        </li>
+        <li>
+          <strong>State Registration:</strong> The task name is recorded in <code>registration.json</code> for live status tracking.
+        </li>
+      </ol>
+    </section>
+
+    <!-- SECTION 11: WINDOWS SERVICE (NSSM) -->
+    <section id="nssm-service" class="guide-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+        </div>
+        <div>
+          <h2 class="section-title">11. Windows Service (NSSM)</h2>
+          <div class="section-subtitle">Full Windows Service integration with crash supervision and boot auto-start (Control Menu Option 6)</div>
+        </div>
+      </div>
+
+      <p>
+        Choosing <strong>Option 6: Register as Windows Service (via NSSM, runs at boot)</strong> from the Control Menu wraps the application in the industry-standard <a href="https://nssm.cc/download" target="_blank" rel="noopener">NSSM (Non-Sucking Service Manager)</a>.
+        This provides native Windows Service status in <code>services.msc</code>, automatic process recovery if Node crashes, and integration with enterprise monitoring agents.
+      </p>
+
+      <h3>Automated Architecture Detection & NSSM Download</h3>
+      <p>
+        When selected, <code>deploy.ps1</code> checks whether <code>tools\nssm\win64\nssm.exe</code> (or <code>win32</code>) exists.
+        If missing, it prompts to automatically download and install the exact binary:
+      </p>
+
+      <div class="code-container">
+        <div class="code-header">NSSM Setup Prompt</div>
+        <pre><code>======================================
+ NSSM Setup
+======================================
+NSSM is required to register a Windows service.
+Detected system architecture: win64
+Only win64\nssm.exe will be kept locally.
+
+ 1. Auto-download NSSM binary (win64)
+ 2. Open NSSM download page for manual setup
+Select an option: 1</code></pre>
+      </div>
+
+      <p>
+        The script securely downloads <code>https://nssm.cc/release/nssm-2.24.zip</code>, extracts only the matching architecture executable into <code>tools\nssm\&lt;arch&gt;\nssm.exe</code>, and cleans up temporary archives.
+      </p>
+
+      <h3>Service Configuration Commands Executed</h3>
+      <p>
+        After prompting for the service name (e.g. <code>LiteraCompareServer</code>), the script stops any old service with the same name and configures NSSM:
+      </p>
+
+      <div class="code-container">
+        <div class="code-header">PowerShell & NSSM Service Registration</div>
+        <pre><code># 1. Install service pointing to npm.cmd running "start"
+&amp; $nssmPath install $taskName $npmPath run $StartCommand
+
+# 2. Configure working directory
+&amp; $nssmPath set $taskName AppDirectory $WorkingFolder
+
+# 3. Configure stdout and stderr log redirection
+&amp; $nssmPath set $taskName AppStdout "$LogFolder\server.log"
+&amp; $nssmPath set $taskName AppStderr "$LogFolder\server.err.log"
+
+# 4. For Portable Run: inject portable Node into service PATH
+&amp; $nssmPath set $taskName AppEnvironmentExtra "PATH=$EnvPath;%PATH%"
+
+# 5. Start the service immediately
+&amp; $nssmPath start $taskName</code></pre>
+      </div>
+
+      <h3>Comparison: Scheduled Task vs. NSSM Windows Service</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Feature Comparison</th>
+              <th>Windows Scheduled Task</th>
+              <th>NSSM Windows Service</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Management Interface</strong></td>
+              <td>Task Scheduler (<code>taskschd.msc</code>)</td>
+              <td>Windows Services (<code>services.msc</code>)</td>
+            </tr>
+            <tr>
+              <td><strong>Execution Account</strong></td>
+              <td><code>NT AUTHORITY\SYSTEM</code></td>
+              <td><code>Local System</code> (configurable via services.msc)</td>
+            </tr>
+            <tr>
+              <td><strong>Process Auto-Restart</strong></td>
+              <td>Restarts only if task triggers again.</td>
+              <td><strong>Immediate auto-restart</strong> if Node.js crashes or is terminated.</td>
+            </tr>
+            <tr>
+              <td><strong>Windows PowerShell Commands</strong></td>
+              <td><code>Get-ScheduledTask</code>, <code>Start-ScheduledTask</code></td>
+              <td><code>Get-Service</code>, <code>Start-Service</code>, <code>Restart-Service</code></td>
+            </tr>
+            <tr>
+              <td><strong>External Tool Requirement</strong></td>
+              <td>None (uses native Windows PowerShell cmdlets).</td>
+              <td>Requires NSSM binary (downloaded automatically by script).</td>
+            </tr>
+            <tr>
+              <td><strong>Recommended For</strong></td>
+              <td>Standard installations where third-party binaries are restricted.</td>
+              <td>High-availability enterprise environments needing automatic crash recovery.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <div class="callout-body">
+          <div class="callout-title">Registration State Tracking</div>
+          <p>
+            Whenever a Scheduled Task or NSSM Service is registered, <code>deploy.ps1</code> updates <code>registration.json</code> inside the respective log directory (<code>logs\registration.json</code> or <code>portable\registration.json</code>).
+            When you run <strong>Option 4: Status Check</strong>, the script queries Windows APIs and displays the live status of the registered task or service.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 12: DIAGNOSTICS & RECOVERY -->
+    <section id="status-diagnostics" class="guide-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div>
+          <h2 class="section-title">12. Diagnostics, Health Verification & Recovery</h2>
+          <div class="section-subtitle">Options 4, 6, 7, 8, and 9 on the Main Menu — Proactive validation and support tools</div>
+        </div>
+      </div>
+
+      <p>
+        The <code>deploy.ps1</code> control panel includes built-in operational utilities to inspect health, preview changes without execution, export sanitized support bundles, and recover from failures.
+      </p>
+
+      <div class="grid-2">
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <span class="feature-card-icon">🔍</span>
+            <div class="feature-card-title">Option 4: Status Check</div>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">
+            Displays live status for Docker containers, native server PIDs, portable server PIDs, registered Scheduled Tasks, NSSM services, IIS site states, and <strong>SSL certificate expiration countdowns</strong> (with warning colors under 30 days).
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <span class="feature-card-icon">🧪</span>
+            <div class="feature-card-title">Option 6: Deployment Dry Run</div>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">
+            Inspects the current configuration, build versions, Node.js binaries, and IIS site bindings <strong>without altering any files, ports, firewall rules, or processes</strong>.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <span class="feature-card-icon">💾</span>
+            <div class="feature-card-title">Option 7: Backup Configuration</div>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">
+            Creates a manual snapshot in <code>backups\YYYYMMDD-HHmmss-manual\</code> containing <code>.env</code>, <code>web.config</code>, <code>iis-sites.json</code>, and <code>build-info.json</code>.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <span class="feature-card-icon">📦</span>
+            <div class="feature-card-title">Option 9: Create Diagnostics Bundle</div>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">
+            Packages <code>web.config</code>, <code>server.log</code>, <code>server.err.log</code>, <code>deploy.log</code>, and IIS configuration into a single zip file.
+            <strong>Security guarantee:</strong> Passwords, tokens, keys, and secrets inside <code>.env</code> are automatically replaced with <code>***REDACTED***</code>.
+          </p>
+        </div>
+      </div>
+
+      <h3>Application Health Endpoints</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Endpoint URL</th>
+              <th>Scope</th>
+              <th>Expected Response</th>
+              <th>Troubleshooting If Failing</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>http://127.0.0.1:&lt;PORT&gt;/api/health</code></td>
+              <td>Internal Loopback</td>
+              <td><code>HTTP 200 OK</code> with JSON health payload</td>
+              <td>Node server is not started or port conflict. Check <code>logs\server.err.log</code>.</td>
+            </tr>
+            <tr>
+              <td><code>https://&lt;FQDN&gt;:&lt;PORT&gt;/api/health</code></td>
+              <td>Public / External</td>
+              <td><code>HTTP 200 OK</code> via IIS Reverse Proxy</td>
+              <td>Check IIS binding, ARR Proxy setting, or Windows Firewall inbound rule.</td>
+            </tr>
+            <tr>
+              <td><code>https://&lt;FQDN&gt;/installer</code></td>
+              <td>Browser Setup</td>
+              <td>Admin installer wizard (before DB initialized)</td>
+              <td>Shown when <code>server\data\app.db</code> does not yet exist.</td>
+            </tr>
+            <tr>
+              <td><code>https://&lt;FQDN&gt;/</code></td>
+              <td>Browser Production</td>
+              <td>Litera Compare Server Web Client / Admin Panel</td>
+              <td>Active once database setup is completed.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 13: WEB APPLICATION INSTALLATION WIZARD (POST-DEPLOYMENT SETUP) -->
+    <section id="web-installer" class="guide-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div>
+          <h2 class="section-title">13. Web Application Installation Wizard (/installer)</h2>
+          <div class="section-subtitle">Post-deployment setup: first-time browser initialization, database seeding, and Office manifest generation</div>
+        </div>
+      </div>
+
+      <p>
+        Once the backend is deployed via <code>deploy.ps1</code>, the application must be initialized through its built-in browser-based setup wizard.
+        Before the database is initialized, navigating to your configured application URL automatically routes you to the setup wizard at <code>/installer</code>.
+      </p>
+
+      <div class="credential-box">
+        <div class="cred-item">
+          <span class="cred-label">Default Administrator Username:</span>
+          <span class="cred-val">Admin</span>
+        </div>
+        <div class="cred-item">
+          <span class="cred-label">Default Administrator Password:</span>
+          <span class="cred-val">123456</span>
+        </div>
+        <div class="cred-item">
+          <span class="cred-label">Portal Access Route:</span>
+          <span class="cred-val">/installer &rarr; /</span>
+        </div>
+      </div>
+
+      <h3>Starting the Server for First-Time Setup</h3>
+      <ol class="steps-list">
+        <li>
+          <strong>Launch deploy.ps1:</strong> Open Windows PowerShell as Administrator and run <code>.\deploy.ps1</code>.
+        </li>
+        <li>
+          <strong>Verify Network &amp; Port Settings:</strong> Choose <strong>Option 5 (Network &amp; SSL Configuration Wizard)</strong> to verify or set your application name, port (e.g. <code>3000</code>), and public URL (e.g. <code>http://localhost:3000</code> or <code>https://compare.corp.local</code>).
+        </li>
+        <li>
+          <strong>Compile &amp; Start Runtime:</strong>
+          Select <strong>Option 2 (Server Deploy)</strong> or <strong>Option 3 (Portable Run)</strong>.
+          The script installs dependencies and builds the web client into <code>dist\</code> or <code>portable\app\dist\</code>.
+        </li>
+        <li>
+          <strong>Open Control Menu &amp; Start Server:</strong>
+          When presented with the Control Menu, choose <strong>1. Start Server</strong>.
+          The script binds Node.js to your internal port in the background and reports <code>Status: ONLINE</code>.
+        </li>
+        <li>
+          <strong>Access the Web Browser:</strong>
+          Open Chrome, Edge, or Firefox and navigate to your application URL:
+          <br><code>http://localhost:3000/installer</code> (or <code>https://compare.corp.local/installer</code>).
+        </li>
+      </ol>
+
+      <h3>Step-by-Step Installation Wizard Walkthrough</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Step #</th>
+              <th>Wizard Phase</th>
+              <th>Configuration Inputs</th>
+              <th>Technical Impact & Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Step 1</strong></td>
+              <td>General Application Settings</td>
+              <td>
+                • Application Name (e.g. <code>Litera Compare Server</code>)<br>
+                • Application Base URL (e.g. <code>https://compare.corp.local</code>)<br>
+                • Admin Username (Default: <code>Admin</code>)<br>
+                • Admin Password (Default: <code>123456</code>)
+              </td>
+              <td>
+                Establishes the public base identity and creates the root super-administrator account for all subsequent management.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Step 2</strong></td>
+              <td>Compare Server API Endpoint</td>
+              <td>
+                • Compare Server Base URL (e.g. <code>https://compare.litera.com/api/v1</code>)<br>
+                • Optional Enqueue Endpoint URL (for async job queues)
+              </td>
+              <td>
+                Configures the backend processing engine that executes document comparisons for both the Web Viewer Portal and the Word Add-in.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Step 3</strong></td>
+              <td>Installation Mode</td>
+              <td>
+                • <strong>Full:</strong> Activates Word Add-in and Web Viewer Portal.<br>
+                • <strong>Add-in only:</strong> Hides the Web Viewer Portal.<br>
+                • <strong>Viewer only:</strong> Disables Word Add-in manifest generation.
+              </td>
+              <td>
+                Controls which end-user interfaces and admin navigation tabs are enabled across the system.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Step 4</strong></td>
+              <td>Component URLs Verification</td>
+              <td>
+                • Word Add-in Taskpane URL (<code>/addin/src/taskpane/taskpane.html</code>)<br>
+                • Web Viewer Portal URL (<code>/viewer/home.html</code>)<br>
+                • Add-in Manifest Download URL (<code>/api/installer/manifest</code>)
+              </td>
+              <td>
+                Validates that all static asset paths and API proxy endpoints resolve correctly against the configured Base URL.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Step 5</strong></td>
+              <td>Microsoft Entra SSO (Optional)</td>
+              <td>
+                • Tenant ID (Azure Directory ID)<br>
+                • Client ID (Application ID)<br>
+                • (Can be skipped and configured later from Admin Panel)
+              </td>
+              <td>
+                Enables Microsoft 365 Single Sign-On for enterprise users inside Microsoft Word and the Web Viewer Portal.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Step 6</strong></td>
+              <td>Confirmation & Database Seeding</td>
+              <td>
+                • Review summary screen<br>
+                • Click <strong>"Complete Installation"</strong>
+              </td>
+              <td>
+                Seeds the SQLite database at <code>server\data\app.db</code>, writes configuration records, generates <code>manifest.xml</code>, and locks down the installer.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-success">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        <div class="callout-body">
+          <div class="callout-title">Automated Security Lockdown</div>
+          <p>
+            The <code>/installer</code> endpoint is accessible only when zero admin accounts exist in the database.
+            Once setup is completed, the route automatically locks down. Subsequent visits to <code>/</code> load the production login screen, where you can sign in using <strong><code>Admin</code></strong> and <strong><code>123456</code></strong> (or the password configured in Step 1).
+          </p>
+        </div>
+      </div>
+
+      <h3>Word Add-in Manifest Deployment</h3>
+      <p>
+        After completing the web installer, the Word Add-in XML manifest is dynamically generated with your server's public endpoints.
+        Administrators can download it from <code>{APP_URL}/api/installer/manifest</code> or from <strong>Admin Panel &rarr; Configuration</strong>.
+      </p>
+
+      <div class="grid-2">
+        <div class="feature-card">
+          <div class="feature-card-title">🏢 Enterprise Centralized Deployment (M365)</div>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-top:8px;">
+            1. Open <a href="https://admin.microsoft.com" target="_blank" rel="noopener">Microsoft 365 Admin Center</a>.<br>
+            2. Navigate to <strong>Settings &rarr; Integrated apps &rarr; Add-ins</strong>.<br>
+            3. Click <strong>Deploy Add-in &rarr; Upload custom apps</strong>.<br>
+            4. Choose <em>"I have the manifest file (.xml)"</em> and upload <code>manifest.xml</code>.<br>
+            5. Assign user permissions (Entire Organization or specific Groups) and deploy. The add-in automatically populates on users' Word ribbons within 12–24 hours.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-title">🧪 Local Sideloading (Testing / Dev)</div>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-top:8px;">
+            1. Place <code>manifest.xml</code> into a dedicated shared local folder (e.g. <code>C:\Manifests</code>).<br>
+            2. Share the folder on your local network (e.g. <code>\\localhost\Manifests</code>).<br>
+            3. In Word, go to <strong>File &rarr; Options &rarr; Trust Center &rarr; Trust Center Settings &rarr; Trusted Add-in Catalogs</strong>.<br>
+            4. Add the network path and check <em>"Show in Menu"</em>.<br>
+            5. Restart Word, click <strong>Insert &rarr; Add-ins &rarr; Shared Folder</strong>, and insert Litera Compare.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 14: REFERENCE MATRIX & USEFUL LINKS -->
+    <section id="reference-matrix" class="guide-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </div>
+        <div>
+          <h2 class="section-title">14. Reference Matrix &amp; Useful Links</h2>
+          <div class="section-subtitle">Quick reference commands, ports, and external documentation resources</div>
+        </div>
+      </div>
+
+      <h3>Common Administrator PowerShell Commands</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Operation</th>
+              <th>PowerShell Command</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Check who is listening on port 3000</td>
+              <td><code>Get-NetTCPConnection -LocalPort 3000 -State Listen | Select-Object LocalPort, OwningProcess</code></td>
+            </tr>
+            <tr>
+              <td>View last 50 lines of server error log</td>
+              <td><code>Get-Content .\logs\server.err.log -Tail 50</code></td>
+            </tr>
+            <tr>
+              <td>Check IIS Site bindings and status</td>
+              <td><code>Get-Website -Name "LiteraCompare" | Select-Object Name, State, Bindings</code></td>
+            </tr>
+            <tr>
+              <td>Inspect Windows Scheduled Task status</td>
+              <td><code>Get-ScheduledTask -TaskName "LiteraCompareServer" | Select-Object TaskName, State</code></td>
+            </tr>
+            <tr>
+              <td>Inspect NSSM Windows Service status</td>
+              <td><code>Get-Service -Name "LiteraCompareServer" | Select-Object Name, Status, StartType</code></td>
+            </tr>
+            <tr>
+              <td>List certificates in Local Machine store</td>
+              <td><code>Get-ChildItem Cert:\LocalMachine\My | Select-Object Subject, Thumbprint, NotAfter</code></td>
+            </tr>
+            <tr>
+              <td>View Docker container runtime logs</td>
+              <td><code>docker logs -f litera-compare-server</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>External Documentation & Resource Links</h3>
+      <ul class="bullet-list">
+        <li>
+          <a href="https://nodejs.org/" target="_blank" rel="noopener">Official Node.js Downloads</a> — Node.js LTS releases and Windows x64 distributions.
+        </li>
+        <li>
+          <a href="https://docs.docker.com/desktop/install/windows-install/" target="_blank" rel="noopener">Docker Desktop for Windows</a> — Docker engine installation guide for containerized deployments.
+        </li>
+        <li>
+          <a href="https://www.iis.net/downloads/microsoft/url-rewrite" target="_blank" rel="noopener">Microsoft IIS URL Rewrite 2.1</a> — Essential module for reverse proxy rewrite rules.
+        </li>
+        <li>
+          <a href="https://www.iis.net/downloads/microsoft/application-request-routing" target="_blank" rel="noopener">Microsoft IIS Application Request Routing (ARR) 3.0</a> — Proxy engine required for reverse proxy functionality.
+        </li>
+        <li>
+          <a href="https://nssm.cc/download" target="_blank" rel="noopener">NSSM - The Non-Sucking Service Manager</a> — High-reliability Windows service wrapper utility.
+        </li>
+        <li>
+          <strong>Litera Compare Server Comprehensive Project Guide (GUIDE.md)</strong> — Repository documentation located in the project root directory covering system architecture, database schema, and Office add-in integration.
+        </li>
+      </ul>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="doc-footer">
+      <div>
+        <strong>Litera Compare Server</strong> Deployment Operations Guide &bull; Generated from <code>deploy.ps1</code>
+      </div>
+      <div>
+        <a href="#overview">Back to top &uarr;</a>
+      </div>
+    </footer>
+  </main>
+</div>
+
+</body>
+</html>
